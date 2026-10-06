@@ -12,46 +12,184 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AppState>().currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('More')),
+      appBar: AppBar(title: const Text('More & Settings')),
       body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
-          ListTile(
-            leading: CircleAvatar(
-              child: Text(
-                (user?.name.isNotEmpty ?? false)
-                    ? user!.name[0].toUpperCase()
-                    : '?',
+          // Profile Hero Card
+          InkWell(
+            onTap: () => _push(context, const ProfileSettingsScreen()),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: isDark ? const Color(0xFF132228) : Colors.white,
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withAlpha(20)
+                      : const Color(0xFF0D9488).withAlpha(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(isDark ? 30 : 10),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF0D9488), Color(0xFF0284C7)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      (user?.name.isNotEmpty ?? false)
+                          ? user!.name[0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user?.name ?? 'Household account',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          user?.email ?? '',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                ],
               ),
             ),
-            title: Text(user?.name ?? 'Household account'),
-            subtitle: Text(user?.email ?? ''),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: () => _push(context, const ProfileSettingsScreen()),
           ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.notifications_none_rounded),
-            title: const Text('Reminders'),
-            subtitle: const Text('Bills, refills, and household tasks'),
-            trailing: const Icon(Icons.chevron_right_rounded),
+          const SizedBox(height: 16),
+
+          // Features Section
+          _MoreMenuTile(
+            title: 'Reminders & Tasks',
+            subtitle: 'Bills, refills, and recurring chores',
+            icon: Icons.notifications_active_rounded,
+            badgeColor: const Color(0xFFF59E0B),
             onTap: () => _push(context, const RemindersScreen()),
           ),
-          ListTile(
-            leading: const Icon(Icons.query_stats_rounded),
-            title: const Text('Reports and analytics'),
-            subtitle: const Text('Spending, resource use, and stock'),
-            trailing: const Icon(Icons.chevron_right_rounded),
+          const SizedBox(height: 8),
+          _MoreMenuTile(
+            title: 'Reports & Analytics',
+            subtitle: 'Spending trends, resource metrics, & audits',
+            icon: Icons.query_stats_rounded,
+            badgeColor: const Color(0xFF0D9488),
             onTap: () => _push(context, const ReportsScreen()),
           ),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined),
-            title: const Text('Profile and settings'),
-            subtitle: const Text('Account, household, and preferences'),
-            trailing: const Icon(Icons.chevron_right_rounded),
+          const SizedBox(height: 8),
+          _MoreMenuTile(
+            title: 'Profile & Household Settings',
+            subtitle: 'Manage members, currency, & dark mode',
+            icon: Icons.tune_rounded,
+            badgeColor: const Color(0xFF8B5CF6),
             onTap: () => _push(context, const ProfileSettingsScreen()),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _MoreMenuTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color badgeColor;
+  final VoidCallback onTap;
+
+  const _MoreMenuTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.badgeColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: isDark ? const Color(0xFF132228) : Colors.white,
+          border: Border.all(
+            color: isDark ? Colors.white.withAlpha(15) : Colors.black.withAlpha(12),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: badgeColor.withAlpha(isDark ? 45 : 30),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: badgeColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

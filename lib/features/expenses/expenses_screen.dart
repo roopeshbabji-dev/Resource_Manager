@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../app/app_state.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/models.dart';
 
 const _expenseCategories = [
@@ -139,7 +140,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
               controller: _search,
               onChanged: (_) => setState(() {}),
@@ -159,6 +160,28 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               ),
             ),
           ),
+          SizedBox(
+            height: 38,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _CategoryChip(
+                  label: 'All',
+                  isSelected: _category == null,
+                  color: Theme.of(context).colorScheme.primary,
+                  onTap: () => setState(() => _category = null),
+                ),
+                ..._expenseCategories.map((cat) => _CategoryChip(
+                  label: cat,
+                  isSelected: _category == cat,
+                  color: AppTheme.categoryColor(cat),
+                  onTap: () => setState(() => _category = _category == cat ? null : cat),
+                )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: FutureBuilder<List<Expense>>(
               future: state.getExpenses(),
@@ -176,24 +199,29 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     onAdd: () => _openEditor(),
                   );
                 }
+                final isDark = Theme.of(context).brightness == Brightness.dark;
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   itemCount: expenses.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final expense = expenses[index];
+                    final catColor = AppTheme.categoryColor(expense.category);
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.secondaryContainer,
-                        child: Icon(_categoryIcon(expense.category)),
+                      leading: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: AppTheme.categoryBackground(expense.category, isDark),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(_categoryIcon(expense.category), color: catColor, size: 22),
                       ),
                       title: Text(
                         expense.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
                         '${expense.category} · ${DateFormat('d MMM yyyy').format(expense.date)}',
@@ -208,9 +236,21 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           if (expense.recurring)
-                            Text(
-                              'Recurring',
-                              style: Theme.of(context).textTheme.labelSmall,
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'Recurring',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -474,16 +514,81 @@ class ExpenseDetailScreen extends StatelessWidget {
       symbol: state.currency,
       decimalDigits: 2,
     );
+    final catColor = AppTheme.categoryColor(expense.category);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Expense details')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            money.format(expense.amount),
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.categoryBackground(expense.category, isDark),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: catColor.withValues(alpha: isDark ? 0.3 : 0.25),
+                width: 1.2,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: catColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_categoryIcon(expense.category), color: catColor, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            expense.category.toUpperCase(),
+                            style: TextStyle(
+                              color: catColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (expense.recurring)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Recurring',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  money.format(expense.amount),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 18),
           _DetailLine(label: 'Title', value: expense.title),
@@ -763,6 +868,61 @@ class _FeatureError extends StatelessWidget {
       ],
     ),
   );
+}
+
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _CategoryChip({
+    required this.label,
+    required this.isSelected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? color
+                  : (isDark ? const Color(0xFF162930) : Colors.white),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? color
+                    : (isDark ? const Color(0xFF1E353E) : const Color(0xFFE2EBE6)),
+                width: 1.2,
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : const Color(0xFF334155)),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 IconData _categoryIcon(String category) => switch (category.toLowerCase()) {

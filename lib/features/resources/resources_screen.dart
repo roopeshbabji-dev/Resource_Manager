@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../app/app_state.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/models.dart';
 
 class ResourcesScreen extends StatefulWidget {
@@ -111,6 +112,8 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final resource = resources[index];
+                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    final resColor = AppTheme.categoryColor(resource.name);
                     return FutureBuilder<List<ResourceUsage>>(
                       future: state.getResourceUsage(resource.id),
                       builder: (context, usageSnapshot) {
@@ -130,13 +133,15 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 4,
                           ),
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.secondaryContainer,
-                            child: Icon(_iconFor(resource.name)),
+                          leading: Container(
+                            padding: const EdgeInsets.all(9),
+                            decoration: BoxDecoration(
+                              color: AppTheme.categoryBackground(resource.name, isDark),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(_iconFor(resource.name), color: resColor, size: 22),
                           ),
-                          title: Text(resource.name),
+                          title: Text(resource.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                           subtitle: Text(
                             '${total.toStringAsFixed(1)} ${resource.unit} this month · ${resource.category}',
                           ),
@@ -612,14 +617,19 @@ class ResourceDetailScreen extends StatelessWidget {
                                 ),
                               ),
                               isCurved: true,
-                              barWidth: 3,
-                              color: Theme.of(context).colorScheme.primary,
-                              dotData: const FlDotData(show: false),
+                              barWidth: 3.5,
+                              color: AppTheme.categoryColor(resource.name),
+                              dotData: const FlDotData(show: true),
                               belowBarData: BarAreaData(
                                 show: true,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.12),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    AppTheme.categoryColor(resource.name).withValues(alpha: 0.3),
+                                    AppTheme.categoryColor(resource.name).withValues(alpha: 0.0),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -695,31 +705,51 @@ class _ResourceMetric extends StatelessWidget {
   const _ResourceMetric({required this.label, required this.value});
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 164,
-    child: Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      width: 164,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF162930) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? const Color(0xFF1E353E) : const Color(0xFFE2EBE6),
+            width: 1.2,
           ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _ResourceMessage extends StatelessWidget {

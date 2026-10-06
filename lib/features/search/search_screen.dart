@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/app_state.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/models.dart';
 import '../expenses/expenses_screen.dart';
 import '../inventory/inventory_screen.dart';
@@ -95,6 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           title: item.title,
                           subtitle: item.category,
                           icon: Icons.receipt_long_outlined,
+                          color: AppTheme.categoryColor(item.category),
                           open: () => _push(
                             context,
                             ExpenseDetailScreen(expense: item),
@@ -115,6 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           title: item.name,
                           subtitle: '${item.category} · ${item.unit}',
                           icon: Icons.eco_outlined,
+                          color: AppTheme.categoryColor(item.category),
                           open: () => _push(
                             context,
                             ResourceDetailScreen(resource: item),
@@ -136,6 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           subtitle:
                               '${item.quantity} ${item.unit} · ${item.category}',
                           icon: Icons.inventory_2_outlined,
+                          color: AppTheme.categoryColor(item.category),
                           open: () =>
                               _push(context, InventoryDetailScreen(item: item)),
                         ),
@@ -154,6 +158,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           title: item.title,
                           subtitle: item.description,
                           icon: Icons.notifications_none_rounded,
+                          color: const Color(0xFFF59E0B),
                           open: () => _push(
                             context,
                             ReminderEditorScreen(reminder: item),
@@ -167,6 +172,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     message: 'No matching records found.',
                   );
                 }
+                final isDark = Theme.of(context).brightness == Brightness.dark;
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   itemCount: results.length,
@@ -174,8 +180,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (context, index) {
                     final item = results[index];
                     return ListTile(
-                      leading: CircleAvatar(child: Icon(item.icon)),
-                      title: Text(item.title),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: item.color.withAlpha(isDark ? 45 : 30),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(item.icon, color: item.color, size: 20),
+                      ),
+                      title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: Text('${item.kind} · ${item.subtitle}'),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: item.open,
@@ -228,6 +243,7 @@ class _SearchResult {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Color color;
   final VoidCallback open;
 
   const _SearchResult({
@@ -235,6 +251,7 @@ class _SearchResult {
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.color,
     required this.open,
   });
 }

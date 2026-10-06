@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../app/app_state.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/models.dart';
 
 const _inventoryCategories = [
@@ -80,7 +81,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
               controller: _search,
               onChanged: (_) => setState(() {}),
@@ -100,6 +101,40 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ),
             ),
           ),
+          SizedBox(
+            height: 38,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _InventoryFilterChip(
+                  label: 'All items',
+                  isSelected: _filter == 'All',
+                  color: Theme.of(context).colorScheme.primary,
+                  onTap: () => setState(() => _filter = 'All'),
+                ),
+                _InventoryFilterChip(
+                  label: 'Low stock',
+                  isSelected: _filter == 'Low stock',
+                  color: const Color(0xFFF59E0B),
+                  onTap: () => setState(() => _filter = 'Low stock'),
+                ),
+                _InventoryFilterChip(
+                  label: 'Out of stock',
+                  isSelected: _filter == 'Out of stock',
+                  color: const Color(0xFFEF4444),
+                  onTap: () => setState(() => _filter = 'Out of stock'),
+                ),
+                _InventoryFilterChip(
+                  label: 'Expiring',
+                  isSelected: _filter == 'Expiring',
+                  color: const Color(0xFFF97316),
+                  onTap: () => setState(() => _filter = 'Expiring'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: FutureBuilder<List<InventoryItem>>(
               future: state.getInventory(),
@@ -107,8 +142,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 if (snapshot.hasError) {
                   return _InventoryMessage(
                     message: 'Inventory could not be loaded.',
-                    onRetry: () => setState(() {}),
-                  );
+                    onRetry: () => setState(() {}));
                 }
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -124,6 +158,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     actionLabel: 'Add item',
                   );
                 }
+                final isDark = Theme.of(context).brightness == Brightness.dark;
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   itemCount: items.length,
@@ -132,20 +167,47 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     final item = items[index];
                     final status = _stockStatus(item);
                     final expiry = _expiryStatus(item);
+                    final catColor = AppTheme.categoryColor(item.category);
+                    final statusColor = item.quantity <= 0
+                        ? const Color(0xFFEF4444)
+                        : item.quantity <= item.minimumStock
+                        ? const Color(0xFFF59E0B)
+                        : const Color(0xFF10B981);
+
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.secondaryContainer,
-                        child: Icon(_inventoryIcon(item.category)),
+                      leading: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: AppTheme.categoryBackground(item.category, isDark),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(_inventoryIcon(item.category), color: catColor, size: 22),
                       ),
-                      title: Text(item.name),
+                      title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: Text(
-                        '${item.quantity} ${item.unit} · ${item.category}\n$status${item.expiryDate == null ? '' : ' · $expiry'}',
+                        '${item.quantity} ${item.unit} · ${item.category}${item.expiryDate == null ? '' : '\nExpiry: $expiry'}',
                       ),
                       isThreeLine: item.expiryDate != null,
-                      trailing: const Icon(Icons.chevron_right_rounded),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: isDark ? 0.2 : 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: statusColor.withValues(alpha: isDark ? 0.35 : 0.25),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          status,
+                          style: TextStyle(
+                            color: statusColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       onTap: () => _openDetail(context, item),
                     );
                   },
@@ -449,24 +511,92 @@ class InventoryDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.read<AppState>();
     final expiry = _expiryStatus(item);
+    final status = _stockStatus(item);
     final money = NumberFormat.currency(
       locale: 'en_IN',
       symbol: state.currency,
       decimalDigits: 2,
     );
+    final catColor = AppTheme.categoryColor(item.category);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final statusColor = item.quantity <= 0
+        ? const Color(0xFFEF4444)
+        : item.quantity <= item.minimumStock
+        ? const Color(0xFFF59E0B)
+        : const Color(0xFF10B981);
+
     return Scaffold(
       appBar: AppBar(title: Text(item.name)),
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          Text(
-            '${item.quantity} ${item.unit}',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.categoryBackground(item.category, isDark),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: catColor.withValues(alpha: isDark ? 0.3 : 0.25),
+                width: 1.2,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: catColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_inventoryIcon(item.category), color: catColor, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            item.category.toUpperCase(),
+                            style: TextStyle(
+                              color: catColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1),
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  '${item.quantity} ${item.unit}',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(_stockStatus(item)),
           const SizedBox(height: 18),
           _InventoryDetailLine(label: 'Category', value: item.category),
           _InventoryDetailLine(
@@ -599,3 +729,58 @@ IconData _inventoryIcon(String category) => switch (category.toLowerCase()) {
   'maintenance' => Icons.handyman_outlined,
   _ => Icons.inventory_2_outlined,
 };
+
+class _InventoryFilterChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _InventoryFilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? color
+                  : (isDark ? const Color(0xFF162930) : Colors.white),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? color
+                    : (isDark ? const Color(0xFF1E353E) : const Color(0xFFE2EBE6)),
+                width: 1.2,
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : const Color(0xFF334155)),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -128,14 +128,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 ),
                               ),
                               isCurved: true,
-                              barWidth: 3,
+                              barWidth: 3.5,
                               color: Theme.of(context).colorScheme.primary,
                               dotData: const FlDotData(show: true),
                               belowBarData: BarAreaData(
                                 show: true,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.1),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.0),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -474,12 +479,13 @@ class _InventoryReportLine extends StatelessWidget {
 }
 
 const _chartColors = [
-  Color(0xFF287271),
-  Color(0xFFE07A5F),
-  Color(0xFF4169A1),
-  Color(0xFFD3A548),
-  Color(0xFF785B84),
-  Color(0xFF5C8D62),
+  Color(0xFF0D9488), // Eco Teal
+  Color(0xFF0284C7), // Ocean Blue
+  Color(0xFFF59E0B), // Solar Amber
+  Color(0xFF10B981), // Fresh Mint
+  Color(0xFF8B5CF6), // Royal Purple
+  Color(0xFFF43F5E), // Coral Rose
+  Color(0xFFF97316), // Sunset Orange
 ];
 
 extension on DateTime {

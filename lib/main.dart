@@ -60,14 +60,14 @@ class _SplashScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
+                colors: [Color(0xFF0D9488), Color(0xFF059669)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(28),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.35),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -114,28 +114,28 @@ const _kFeatureSlides = [
     title: 'Smart Meter & Resource Tracking',
     description: 'Monitor Electricity, Water, Gas & Internet consumption in real time with automatic cost projections.',
     icon: Icons.bolt_rounded,
-    gradient: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+    gradient: [Color(0xFF0369A1), Color(0xFF0284C7)],
   ),
   _FeatureSlide(
     badge: 'BUDGET MANAGEMENT',
     title: 'Expense & Financial Clarity',
     description: 'Track household bills, categorize recurring expenses, and forecast monthly family spending trends.',
     icon: Icons.account_balance_wallet_rounded,
-    gradient: [Color(0xFF312E81), Color(0xFF6366F1)],
+    gradient: [Color(0xFF4F46E5), Color(0xFF6366F1)],
   ),
   _FeatureSlide(
     badge: 'PANTRY & STOCK',
     title: 'Smart Inventory & Expiry Alerts',
     description: 'Keep essentials stocked with minimum threshold warnings, restock lists, and expiry date notifications.',
     icon: Icons.kitchen_rounded,
-    gradient: [Color(0xFF064E3B), Color(0xFF10B981)],
+    gradient: [Color(0xFF047857), Color(0xFF10B981)],
   ),
   _FeatureSlide(
     badge: 'AUTOMATED SCHEDULES',
     title: 'Timely Tasks & Bill Reminders',
     description: 'Never miss utility due dates, filter cleanings, or recurring household maintenance schedules.',
     icon: Icons.notifications_active_rounded,
-    gradient: [Color(0xFF78350F), Color(0xFFF59E0B)],
+    gradient: [Color(0xFFB45309), Color(0xFFF59E0B)],
   ),
 ];
 
@@ -461,14 +461,14 @@ class _AuthScreenState extends State<AuthScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
+                            colors: [Color(0xFF0D9488), Color(0xFF059669)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(18),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+                              color: const Color(0xFF0D9488).withValues(alpha: 0.35),
                               blurRadius: 14,
                               offset: const Offset(0, 4),
                             ),
@@ -481,23 +481,29 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Household Resource Manager',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Household Resource Manager',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            'Smart Home Utilities & Inventory',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            Text(
+                              'Smart Home Utilities & Inventory',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -704,28 +710,28 @@ const _kHomeInsightTips = [
     title: 'Smart Power Saving',
     description: 'Switch off appliances on standby mode to reduce household electricity waste by 5–10%.',
     icon: Icons.electric_bolt_rounded,
-    gradient: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
+    gradient: [Color(0xFFB45309), Color(0xFFF59E0B)],
   ),
   _FeatureSlide(
     badge: 'WATER AUDIT',
     title: 'Regular Meter Checks',
     description: 'Log weekly water meter readings to detect subtle leaks and keep utility bills optimized.',
     icon: Icons.water_drop_rounded,
-    gradient: [Color(0xFF0F766E), Color(0xFF06B6D4)],
+    gradient: [Color(0xFF0369A1), Color(0xFF0284C7)],
   ),
   _FeatureSlide(
     badge: 'PANTRY CONTROL',
     title: 'Pantry Expiry Tracking',
     description: 'Track expiry dates on groceries and essential supplies to minimize food waste.',
-    icon: Icons.inventory_2_rounded,
-    gradient: [Color(0xFF065F46), Color(0xFF10B981)],
+    icon: Icons.kitchen_rounded,
+    gradient: [Color(0xFF047857), Color(0xFF10B981)],
   ),
   _FeatureSlide(
     badge: 'BUDGET GOAL',
     title: 'Categorized Expenses',
     description: 'Tag recurring utility bills to easily forecast and manage next month’s budget.',
     icon: Icons.savings_rounded,
-    gradient: [Color(0xFF581C87), Color(0xFF8B5CF6)],
+    gradient: [Color(0xFF6D28D9), Color(0xFF8B5CF6)],
   ),
 ];
 
@@ -945,7 +951,7 @@ class HomeScreen extends StatelessWidget {
           final change = data.expenseChangePercent;
           final comparison =
               data.previousMonthExpenses == 0 && data.monthlyExpenses == 0
-              ? 'No prior comparison available'
+              ? 'No prior data'
               : '${change >= 0 ? '↑' : '↓'} ${change.abs().toStringAsFixed(1)}% vs last month';
 
           final nowFormatted = DateFormat('EEEE, d MMMM').format(DateTime.now());
@@ -1005,21 +1011,23 @@ class HomeScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                    gradient: LinearGradient(
+                      colors: isDark
+                          ? const [Color(0xFF042F2C), Color(0xFF0F3A36), Color(0xFF134E48)]
+                          : const [Color(0xFF0F766E), Color(0xFF0D9488), Color(0xFF14B8A6)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF334155) : const Color(0xFF1E293B),
+                      color: isDark ? const Color(0xFF134E48) : const Color(0xFF2DD4BF).withValues(alpha: 0.4),
                       width: 1.2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
+                        color: const Color(0xFF0D9488).withValues(alpha: isDark ? 0.2 : 0.25),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
@@ -1029,22 +1037,32 @@ class HomeScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Total Monthly Spending',
-                            style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+                          const Flexible(
+                            child: Text(
+                              'Total Monthly Spending',
+                              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: change <= 0
-                                  ? const Color(0xFF10B981).withValues(alpha: 0.2)
-                                  : const Color(0xFFEF4444).withValues(alpha: 0.2),
+                              color: Colors.black.withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: change <= 0
+                                    ? const Color(0xFF34D399).withValues(alpha: 0.4)
+                                    : const Color(0xFFF87171).withValues(alpha: 0.4),
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               comparison,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: change <= 0 ? const Color(0xFF34D399) : const Color(0xFFF87171),
+                                color: change <= 0 ? const Color(0xFF6EE7B7) : const Color(0xFFFCA5A5),
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -1077,7 +1095,7 @@ class HomeScreen extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: columns == 2 ? 1.55 : 1.25,
+                      childAspectRatio: columns == 2 ? 1.15 : 1.3,
                       children: [
                         _MetricCard(
                           title: 'Water Usage',
@@ -1312,14 +1330,15 @@ class HomeScreen extends StatelessWidget {
                             separatorBuilder: (context, index) => const Divider(height: 1),
                             itemBuilder: (context, index) {
                               final item = data.recentExpenses[index];
+                              final itemColor = AppTheme.categoryColor(item.category);
                               return ListTile(
                                 leading: Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(9),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppTheme.categoryBackground(item.category, isDark),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Icon(Icons.receipt_rounded, color: theme.colorScheme.primary, size: 20),
+                                  child: Icon(Icons.receipt_rounded, color: itemColor, size: 20),
                                 ),
                                 title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600)),
                                 subtitle: Text(
@@ -1413,61 +1432,86 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF122228) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: accentColor.withValues(alpha: isDark ? 0.3 : 0.2),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: isDark ? 0.08 : 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: isDark ? 0.22 : 0.14),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(icon, color: accentColor, size: 20),
                     ),
-                    child: Icon(icon, color: accentColor, size: 20),
-                  ),
-                  Icon(Icons.arrow_outward_rounded, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
+                    Icon(
+                      Icons.arrow_outward_rounded,
+                      size: 16,
+                      color: accentColor.withValues(alpha: 0.7),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    title,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w600,
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                  ),
-                  Text(
-                    detail,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                    const SizedBox(height: 2),
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    Text(
+                      detail,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

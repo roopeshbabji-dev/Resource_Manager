@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../app/app_state.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/models.dart';
 
 class RemindersScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<AppState>();
+    final state = context.read<AppState>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reminders'),
@@ -68,6 +69,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               actionLabel: 'Add reminder',
             );
           }
+          final isDark = Theme.of(context).brightness == Brightness.dark;
           return ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
             itemCount: reminders.length,
@@ -81,10 +83,24 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     item.dueDate.month,
                     item.dueDate.day,
                   ).isBefore(DateTime.now().dateOnly);
+              final statusColor = overdue
+                  ? const Color(0xFFEF4444)
+                  : item.completed
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFFF59E0B);
+              final statusText = overdue
+                  ? 'Overdue'
+                  : item.completed
+                  ? 'Done'
+                  : item.recurring == 'None'
+                  ? 'Once'
+                  : item.recurring;
+
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 4),
                 leading: Checkbox(
                   value: item.completed,
+                  activeColor: AppTheme.primaryTeal,
                   semanticLabel: 'Mark ${item.title} completed',
                   onChanged: (value) async {
                     await context.read<AppState>().updateReminder(
@@ -101,29 +117,40 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     );
                   },
                 ),
-                title: Text(item.title),
+                title: Text(
+                  item.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    decoration: item.completed ? TextDecoration.lineThrough : null,
+                  ),
+                ),
                 subtitle: Text(
                   '${DateFormat('d MMM yyyy').format(item.dueDate)} · ${item.time}${item.description.isEmpty ? '' : '\n${item.description}'}',
                 ),
                 isThreeLine: item.description.isNotEmpty,
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      overdue
-                          ? 'Overdue'
-                          : item.completed
-                          ? 'Done'
-                          : item.recurring == 'None'
-                          ? 'Once'
-                          : item.recurring,
-                      style: TextStyle(
-                        color: overdue
-                            ? Theme.of(context).colorScheme.error
-                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: isDark ? 0.2 : 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: statusColor.withValues(alpha: isDark ? 0.35 : 0.25),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        statusText,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 4),
                     PopupMenuButton<String>(
                       tooltip: 'Reminder actions',
                       padding: EdgeInsets.zero,
