@@ -34,6 +34,14 @@ class UserModel {
     'passwordSalt': passwordSalt,
     'createdAt': createdAt,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserModel && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class HouseholdMember {
@@ -66,6 +74,16 @@ class HouseholdMember {
     'relationship': relationship,
     'avatar': avatar,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HouseholdMember &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class ResourceModel {
@@ -110,6 +128,16 @@ class ResourceModel {
     'color': color,
     'createdAt': createdAt,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ResourceModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class ResourceUsage {
@@ -154,6 +182,16 @@ class ResourceUsage {
     'cost': cost,
     'notes': notes,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ResourceUsage &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Expense {
@@ -202,6 +240,14 @@ class Expense {
     'notes': notes,
     'recurring': recurring ? 1 : 0,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Expense && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class InventoryItem {
@@ -260,6 +306,16 @@ class InventoryItem {
     'expiryDate': expiryDate?.toIso8601String(),
     'notes': notes,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InventoryItem &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class ReminderModel {
@@ -304,6 +360,16 @@ class ReminderModel {
     'recurring': recurring,
     'completed': completed ? 1 : 0,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReminderModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class AppSetting {
@@ -316,4 +382,15 @@ class AppSetting {
       AppSetting(key: map['key'] as String, value: map['value'] as String);
 
   Map<String, dynamic> toMap() => {'key': key, 'value': value};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppSetting &&
+          runtimeType == other.runtimeType &&
+          key == other.key &&
+          value == other.value;
+
+  @override
+  int get hashCode => Object.hash(key, value);
 }

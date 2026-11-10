@@ -192,7 +192,10 @@ class _AddResourceScreenState extends State<AddResourceScreen> {
     if (resource != null) {
       _name.text = resource.name;
       _unit.text = resource.unit;
-      _category = resource.category;
+      _category =
+          const ['Utility', 'Household', 'Other'].contains(resource.category)
+              ? resource.category
+              : 'Other';
     }
   }
 
@@ -329,9 +332,19 @@ class _AddResourceUsageScreenState extends State<AddResourceUsageScreen> {
       if (!mounted) return;
       setState(() {
         _resources = resources;
-        _selected =
-            widget.initialResource ??
-            (resources.isEmpty ? null : resources.first);
+        if (resources.isNotEmpty) {
+          final initial = widget.initialResource;
+          if (initial != null) {
+            _selected = resources.cast<ResourceModel?>().firstWhere(
+              (r) => r?.id == initial.id,
+              orElse: () => resources.first,
+            );
+          } else {
+            _selected = resources.first;
+          }
+        } else {
+          _selected = null;
+        }
         _loading = false;
       });
     } catch (error, stackTrace) {
